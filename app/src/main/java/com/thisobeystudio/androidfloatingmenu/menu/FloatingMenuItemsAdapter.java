@@ -1,7 +1,6 @@
 package com.thisobeystudio.androidfloatingmenu.menu;
 
 import android.content.Context;
-import android.graphics.Color;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -44,6 +43,10 @@ public class FloatingMenuItemsAdapter
         MenuItemViewHolder(View itemView) {
             super(itemView);
             menuItemTextView = itemView.findViewById(R.id.menu_item_text_view);
+
+            if (menuItemTextView == null) {
+                throw new RuntimeException("No TextView found with id = 'menu_item_text_view'");
+            }
         }
     }
 
@@ -83,9 +86,6 @@ public class FloatingMenuItemsAdapter
             // set Text View Compound Drawable
             setTextViewCompoundDrawable(holder.menuItemTextView, menuItems.get(i).getIcon());
 
-            // ad shadow to menu item text view
-            holder.menuItemTextView.setShadowLayer(5, -1, 3, Color.BLUE); // fixme move to demo floating menu
-
             final int pos = i;
             holder.menuItemTextView.setOnClickListener(new View.OnClickListener() {
                 @Override
@@ -110,7 +110,7 @@ public class FloatingMenuItemsAdapter
      * @param textView target text view
      * @param drawable compound drawable icon
      */
-    private void setTextViewCompoundDrawable(TextView textView, int drawable){
+    private void setTextViewCompoundDrawable(TextView textView, int drawable) {
 
         int noDrawable = 0;
 

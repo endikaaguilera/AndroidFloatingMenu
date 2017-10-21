@@ -107,20 +107,13 @@ public class DemoActivity extends AppCompatActivity
 
         final String demoHeaderTitle = "DEMO MENU";
         mFloatingMenu.setHeaderTitle(demoHeaderTitle);
-        // to avoid removeMenu() on header click, so preferably null or specify an OnClickListener
-        //mFloatingMenu.setHeaderOnClickListener(null);
+
         mFloatingMenu.setHeaderOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 Toast.makeText(DemoActivity.this, "Menu Header Clicked", Toast.LENGTH_SHORT).show();
             }
         });
-
-        // if true menu will be removed onBack pressed with properly OnBackPressed setup
-        mFloatingMenu.setCancelable(true);
-
-        // if true menu will be removed on any out of menu touch
-        mFloatingMenu.setCancelableOnTouchOutside(true);
 
     }
 

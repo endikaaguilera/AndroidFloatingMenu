@@ -73,4 +73,12 @@
         <item name="android:textSize">@dimen/menu_item_text_view_size</item>
     </style>
 
+    <style name="FloatingMenuItemWithTextShadow" parent="FloatingMenuItem">
+        <!-- Customize your Menu Item Text Shadow theme here. -->
+        <item name="android:shadowColor">@color/colorAccent</item>
+        <item name="android:shadowDx">-1</item>
+        <item name="android:shadowDy">3</item>
+        <item name="android:shadowRadius">5</item>
+    </style>
+
 </resources>

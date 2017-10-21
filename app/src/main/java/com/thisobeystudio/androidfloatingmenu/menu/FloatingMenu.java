@@ -1,15 +1,14 @@
 package com.thisobeystudio.androidfloatingmenu.menu;
 
+import android.content.Context;
 import android.support.constraint.ConstraintLayout;
 import android.support.constraint.ConstraintSet;
 import android.support.v4.view.ViewCompat;
-import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.CardView;
 import android.support.v7.widget.DividerItemDecoration;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.transition.TransitionManager;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -27,9 +26,9 @@ import java.util.ArrayList;
  * Contact: thisobeystudio@gmail.com
  */
 
-// todo menu item text color tint list
-// todo menu item icons color
-// todo menu item icons color tint list
+// TODO menu item text color tint list
+// TODO menu item icons color
+// TODO menu item icons color tint list
 public class FloatingMenu {
 
     public enum MenuIconPosition {
@@ -40,25 +39,26 @@ public class FloatingMenu {
         BOTTOM
     }
 
-    private final String TAG = FloatingMenu.class.getSimpleName();
+    //private final String TAG = FloatingMenu.class.getSimpleName();
 
     /**
-     * @param appCompatActivity host activity
+     * @param context           context
      * @param parent            parent ConstraintLayout
      * @param menuItemCallbacks menu callbacks
      * @param menuData          menu data
+     * @param menuIconPosition  menu item icon pos
      */
-    public void showFloatingMenu(final AppCompatActivity appCompatActivity,
+    public void showFloatingMenu(final Context context,
                                  final ConstraintLayout parent,
                                  final FloatingMenuItemsAdapter.MenuItemCallbacks menuItemCallbacks,
                                  final ArrayList<FloatingMenuItem> menuData,
                                  final MenuIconPosition menuIconPosition) {
 
-        if (appCompatActivity == null
+        if (context == null
                 || parent == null
                 || menuItemCallbacks == null
                 || menuData == null) {
-            Toast.makeText(appCompatActivity,
+            Toast.makeText(context,
                     "Something went wrong loading menu", Toast.LENGTH_SHORT).show();
             setVisible(false);
             return;
@@ -68,30 +68,36 @@ public class FloatingMenu {
 
         if (!isVisible()) {
             setVisible(true);
-            setupFloatingMenuFrameLayout(appCompatActivity);
+            setupFloatingMenuFrameLayout(context);
             setMenuIconPosition(menuIconPosition);
             setupRecyclerView(
-                    appCompatActivity,
+                    context,
                     menuItemCallbacks,
                     menuData);
-            setCancelableOnTouchOutside();
             setCardView();
             setHeaderTextView();
+            setCancelableOnTouchOutside();
             ViewCompat.setElevation(getFrameLayout(), ViewCompat.getElevation(getCardView()));
+
+            // menu dimens are based on dimens.xml if preventMenuBiggerThanParent(true)
+            // will fix if at some point menu size is bigger than parent size
+            preventMenuBiggerThanParent();
+
+            getCardView().setOnClickListener(null);
         }
 
     }
 
     /**
-     * @param appCompatActivity host activity
+     * @param context context
      */
-    private void setupFloatingMenuFrameLayout(final AppCompatActivity appCompatActivity) {
+    private void setupFloatingMenuFrameLayout(final Context context) {
 
         final ConstraintSet constraintSet = new ConstraintSet();
 
         TransitionManager.beginDelayedTransition(getParentConstraintLayout());
 
-        LayoutInflater inflater = LayoutInflater.from(appCompatActivity);
+        LayoutInflater inflater = LayoutInflater.from(context);
         FrameLayout frameLayout = (FrameLayout)
                 inflater.inflate(R.layout.floating_menu, getParentConstraintLayout(), false);
         setFrameLayout(frameLayout);
@@ -129,12 +135,12 @@ public class FloatingMenu {
     }
 
     /**
-     * @param appCompatActivity host activity
+     * @param context           host activity
      * @param menuItemCallbacks menu callbacks
      * @param menuData          menu data
      */
     private void setupRecyclerView(
-            final AppCompatActivity appCompatActivity,
+            final Context context,
             final FloatingMenuItemsAdapter.MenuItemCallbacks menuItemCallbacks,
             final ArrayList<FloatingMenuItem> menuData) {
 
@@ -142,16 +148,22 @@ public class FloatingMenu {
                 getParentConstraintLayout().findViewById(R.id.floating_menu_recycler_view);
 
         if (mRecyclerView == null) {
-            Log.e(TAG, "No recycler view found with id = 'floating_menu_recycler_view'");
-            return;
+            throw new RuntimeException(
+                    "No recycler view found with id = 'floating_menu_recycler_view'");
         }
 
         // use this setting to improve performance if you know that changes
         // in content do not change the layout size of the RecyclerView
         mRecyclerView.setHasFixedSize(true);
 
+        /*
+        LinearLayoutManager mLayoutManager
+                = new LinearLayoutManager(context, LinearLayoutManager.HORIZONTAL, false); // horizontal scroll
+        SnapHelper snapHelper = new PagerSnapHelper(); // scroll item per item
+        snapHelper.attachToRecyclerView(mRecyclerView);
+        */
         final RecyclerView.LayoutManager mLayoutManager =
-                new LinearLayoutManager(appCompatActivity);
+                new LinearLayoutManager(context);
         mRecyclerView.setLayoutManager(mLayoutManager);
 
         // Makes scroll smoothly
@@ -159,7 +171,7 @@ public class FloatingMenu {
 
         // specify an adapter
         FloatingMenuItemsAdapter adapter = new FloatingMenuItemsAdapter(
-                appCompatActivity,
+                context,
                 menuData,
                 getMenuIconPosition());
 
@@ -171,7 +183,7 @@ public class FloatingMenu {
 
         // add vertical item decoration
         mRecyclerView.addItemDecoration(
-                new DividerItemDecoration(appCompatActivity, DividerItemDecoration.VERTICAL));
+                new DividerItemDecoration(context, DividerItemDecoration.VERTICAL));
 
         // set recyclerView VISIBLE
         mRecyclerView.setVisibility(View.VISIBLE);
@@ -256,6 +268,39 @@ public class FloatingMenu {
             }
         });
 
+    }
+
+    /**
+     * will compare parent view size(width/height) to cardViews size
+     * if any dimen is bigger than parent, that dimen will be set as same as parents dimen
+     */
+    private void preventMenuBiggerThanParent() {
+        if (getParentConstraintLayout() == null || getCardView() == null) return;
+        // using post to make sure measured width & height returns a proper value
+        getCardView().post(new Runnable() {
+            @Override
+            public void run() {
+
+                int parentViewWidth = getParentConstraintLayout().getMeasuredWidth();
+                int parentViewHeight = getParentConstraintLayout().getMeasuredHeight();
+                int cardViewWidth = getCardView().getMeasuredWidth();
+                int cardViewHeight = getCardView().getMeasuredHeight();
+
+                // check that passed with is not bigger than parent width and fix it if so
+                if (cardViewWidth > parentViewWidth)
+                    cardViewWidth = parentViewWidth;
+
+                // check that passed height is not bigger than parent height and fix it if so
+                if (cardViewHeight > parentViewHeight)
+                    cardViewHeight = parentViewHeight;
+
+                ViewGroup.LayoutParams params = getCardView().getLayoutParams();
+                params.width = cardViewWidth;
+                params.height = cardViewHeight;
+                getCardView().setLayoutParams(params);
+
+            }
+        });
     }
 
     /**
@@ -403,7 +448,8 @@ public class FloatingMenu {
     @SuppressWarnings("WeakerAccess")
     public void setHeaderTextView() {
         if (getParentConstraintLayout() == null) return;
-        this.mHeaderTextView = getParentConstraintLayout().findViewById(R.id.floating_menu_header_text_view);
+        this.mHeaderTextView =
+                getParentConstraintLayout().findViewById(R.id.floating_menu_header_text_view);
     }
 
     /**
@@ -560,6 +606,7 @@ public class FloatingMenu {
     /**
      * @param cancelable cancelable on Back Pressed
      */
+    @SuppressWarnings("unused")
     public void setCancelable(boolean cancelable) {
         this.isCancelable = cancelable;
     }
@@ -571,8 +618,10 @@ public class FloatingMenu {
     private boolean isCancelableOnTouchOutside = true;
 
     /**
+     * if true menu will be removed on any out of menu touch, must be set before showFloatingMenu()
      * @param cancelable cancelable On Touch Outside
      */
+    @SuppressWarnings("unused")
     public void setCancelableOnTouchOutside(boolean cancelable) {
         this.isCancelableOnTouchOutside = cancelable;
     }
