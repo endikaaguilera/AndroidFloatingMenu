@@ -8,19 +8,19 @@ package com.thisobeystudio.androidfloatingmenu.menu;
 
 public class FloatingMenuItem {
 
-    String title;
-    int icon;
+    private String title;
+    private int icon;
 
     public FloatingMenuItem(String title, int icon) {
         this.title = title;
         this.icon = icon;
     }
 
-    public String getTitle() {
+    String getTitle() {
         return title;
     }
 
-    public int getIcon() {
+    int getIcon() {
         return icon;
     }
 

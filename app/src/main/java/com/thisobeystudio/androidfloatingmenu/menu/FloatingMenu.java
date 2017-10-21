@@ -5,7 +5,6 @@ import android.support.constraint.ConstraintSet;
 import android.support.v4.view.ViewCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.CardView;
-import android.support.v7.widget.DefaultItemAnimator;
 import android.support.v7.widget.DividerItemDecoration;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
@@ -28,17 +27,9 @@ import java.util.ArrayList;
  * Contact: thisobeystudio@gmail.com
  */
 
-// retains position on orientation change if saved isVisible()
-// setHeaderTitle(title) or showHeader(true) is required to show menu header, but it can be hide any time using showHeader(false)
-
-    // todo menu item text size
-    // todo menu item text color
-    // todo menu item text background color
-    // todo menu item text color tint list
-    // todo menu item icons color
-    // todo menu item icons color tint list
-    // todo save recycler view layout manager data and restore on orientation change (tried saving mLayoutManager.onSaveInstanceState() but didn't work try saving first visible item)
-    // todo if manage to save eacyclerview position properly reset it on removeMenu();
+// todo menu item text color tint list
+// todo menu item icons color
+// todo menu item icons color tint list
 public class FloatingMenu {
 
     public enum MenuIconPosition {
@@ -57,48 +48,11 @@ public class FloatingMenu {
      * @param menuItemCallbacks menu callbacks
      * @param menuData          menu data
      */
-    @SuppressWarnings("unused")
-    public void showFloatingMenu(final AppCompatActivity appCompatActivity,
-                                 final ConstraintLayout parent,
-                                 final FloatingMenuItemsAdapter.MenuItemCallbacks menuItemCallbacks,
-                                 final ArrayList<FloatingMenuItem> menuData) {
-
-        if (appCompatActivity == null
-                || parent == null ||
-                menuItemCallbacks == null ||
-                menuData == null) {
-            Toast.makeText(appCompatActivity,
-                    "Something went wrong loading menu", Toast.LENGTH_SHORT).show();
-            setVisible(false);
-            return;
-        }
-
-        setParentConstraintLayout(parent);
-
-        if (!isVisible()) {
-            setVisible(true);
-            setupFloatingMenuFrameLayout(appCompatActivity);
-            setupRecyclerView(appCompatActivity, menuItemCallbacks, menuData, 0);
-            setCancelableOnTouchOutside();
-            setCardView();
-            setHeaderTextView();
-        }
-
-    }
-
-    /**
-     * @param appCompatActivity    host activity
-     * @param parent               parent ConstraintLayout
-     * @param menuItemCallbacks    menu callbacks
-     * @param menuData             menu data
-     * @param menuItemsIconPadding menu items icon padding
-     */
     public void showFloatingMenu(final AppCompatActivity appCompatActivity,
                                  final ConstraintLayout parent,
                                  final FloatingMenuItemsAdapter.MenuItemCallbacks menuItemCallbacks,
                                  final ArrayList<FloatingMenuItem> menuData,
-                                 final MenuIconPosition menuIconPosition,
-                                 final int menuItemsIconPadding) {
+                                 final MenuIconPosition menuIconPosition) {
 
         if (appCompatActivity == null
                 || parent == null
@@ -116,10 +70,14 @@ public class FloatingMenu {
             setVisible(true);
             setupFloatingMenuFrameLayout(appCompatActivity);
             setMenuIconPosition(menuIconPosition);
-            setupRecyclerView(appCompatActivity, menuItemCallbacks, menuData, menuItemsIconPadding);
+            setupRecyclerView(
+                    appCompatActivity,
+                    menuItemCallbacks,
+                    menuData);
             setCancelableOnTouchOutside();
             setCardView();
             setHeaderTextView();
+            ViewCompat.setElevation(getFrameLayout(), ViewCompat.getElevation(getCardView()));
         }
 
     }
@@ -137,8 +95,6 @@ public class FloatingMenu {
         FrameLayout frameLayout = (FrameLayout)
                 inflater.inflate(R.layout.floating_menu, getParentConstraintLayout(), false);
         setFrameLayout(frameLayout);
-
-        ViewCompat.setElevation(getFrameLayout(), getMenuElevation());
 
         final int margin = 0; // no margin to get full parent size
 
@@ -173,16 +129,14 @@ public class FloatingMenu {
     }
 
     /**
-     * @param appCompatActivity    host activity
-     * @param menuItemCallbacks    menu callbacks
-     * @param menuData             menu data
-     * @param menuItemsIconPadding menu items icon padding
+     * @param appCompatActivity host activity
+     * @param menuItemCallbacks menu callbacks
+     * @param menuData          menu data
      */
     private void setupRecyclerView(
             final AppCompatActivity appCompatActivity,
             final FloatingMenuItemsAdapter.MenuItemCallbacks menuItemCallbacks,
-            final ArrayList<FloatingMenuItem> menuData,
-            final int menuItemsIconPadding) {
+            final ArrayList<FloatingMenuItem> menuData) {
 
         final RecyclerView mRecyclerView =
                 getParentConstraintLayout().findViewById(R.id.floating_menu_recycler_view);
@@ -207,8 +161,7 @@ public class FloatingMenu {
         FloatingMenuItemsAdapter adapter = new FloatingMenuItemsAdapter(
                 appCompatActivity,
                 menuData,
-                getMenuIconPosition(),
-                menuItemsIconPadding);
+                getMenuIconPosition());
 
         // set Adapter CallBacks
         adapter.setCallbacks(menuItemCallbacks);
@@ -219,9 +172,6 @@ public class FloatingMenu {
         // add vertical item decoration
         mRecyclerView.addItemDecoration(
                 new DividerItemDecoration(appCompatActivity, DividerItemDecoration.VERTICAL));
-
-        // fixme nor working
-        mRecyclerView.setItemAnimator(new DefaultItemAnimator());
 
         // set recyclerView VISIBLE
         mRecyclerView.setVisibility(View.VISIBLE);
@@ -308,6 +258,14 @@ public class FloatingMenu {
 
     }
 
+    /**
+     * @param width               menu width
+     * @param height              menu height
+     * @param menuCornerRadius    menu corner radius
+     * @param menuBackgroundColor menu background color
+     * @param menuElevation       menu elevation
+     */
+    @SuppressWarnings("unused")
     public void setMenuProperties(final int width,
                                   final int height,
                                   final float menuCornerRadius,
@@ -415,9 +373,8 @@ public class FloatingMenu {
 
     /**
      * menu elevation
-     * default elevation
      */
-    private int mMenuElevation = 15;
+    private int mMenuElevation;
 
     /**
      * @param menuElevation menu elevation
@@ -430,7 +387,7 @@ public class FloatingMenu {
     /**
      * @return menu elevation
      */
-    @SuppressWarnings("WeakerAccess")
+    @SuppressWarnings({"WeakerAccess", "unused"})
     public int getMenuElevation() {
         return mMenuElevation;
     }
@@ -549,7 +506,7 @@ public class FloatingMenu {
      * @param titleColor      header title color
      * @param backgroundColor header background color
      */
-    @SuppressWarnings("WeakerAccess")
+    @SuppressWarnings({"WeakerAccess", "unused"})
     public void setHeader(
             String text,
             int height,

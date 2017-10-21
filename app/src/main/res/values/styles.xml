@@ -8,4 +8,69 @@
         <item name="colorAccent">@color/colorAccent</item>
     </style>
 
+    <style name="FloatingMenuFrameLayout">
+        <!-- Customize your Menu FrameLayout theme here. -->
+        <item name="android:layout_width">match_parent</item>
+        <item name="android:layout_height">match_parent</item>
+        <item name="android:layout_gravity">center</item>
+        <item name="android:background">@color/menuBackgroundColor</item>
+    </style>
+
+    <style name="FloatingMenuCardView">
+        <!-- Customize your Menu Header theme here. -->
+        <item name="android:layout_width">@dimen/menu_width</item>
+        <item name="android:layout_height">@dimen/menu_height</item>
+        <item name="android:layout_gravity">center</item>
+        <item name="android:clipChildren">false</item>
+        <item name="android:clipToPadding">false</item>
+        <item name="cardCornerRadius">@dimen/menu_corner_radius</item>
+        <item name="cardElevation">@dimen/menu_elevation</item>
+        <item name="cardPreventCornerOverlap">true</item>
+        <item name="layout_constraintBottom_toBottomOf">parent</item>
+        <item name="layout_constraintLeft_toLeftOf">parent</item>
+        <item name="layout_constraintRight_toRightOf">parent</item>
+        <item name="layout_constraintTop_toTopOf">parent</item>
+    </style>
+
+    <style name="FloatingMenuLinearLayout">
+        <!-- Customize your Menu LinearLayout theme here. -->
+        <item name="android:layout_width">match_parent</item>
+        <item name="android:layout_height">match_parent</item>
+        <item name="android:orientation">vertical</item>
+    </style>
+
+    <style name="FloatingMenuHeader">
+        <!-- Customize your Menu Header theme here. -->
+        <item name="android:layout_width">match_parent</item>
+        <item name="android:layout_height">@dimen/menu_header_height</item>
+        <item name="android:background">@color/menuHeaderBackgroundColor</item>
+        <item name="android:gravity">center</item>
+        <item name="android:padding">@dimen/menu_header_padding</item>
+        <item name="android:text">@string/app_name</item>
+        <item name="android:textColor">@color/menuHeaderTitleColor</item>
+        <item name="android:textSize">@dimen/menu_header_text_view_size</item>
+    </style>
+
+    <style name="FloatingMenuRecyclerView">
+        <!-- Customize your Menu RecyclerView theme here. -->
+        <item name="android:layout_width">match_parent</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:background">@color/menuItemTextViewBackgroundColor</item>
+        <item name="android:visibility">gone</item>
+    </style>
+
+    <style name="FloatingMenuItem">
+        <!-- Customize your Menu Item theme here. -->
+        <item name="android:layout_width">match_parent</item>
+        <item name="android:layout_height">@dimen/menu_item_height</item>
+        <item name="android:layout_gravity">center_vertical</item>
+        <item name="android:background">?android:selectableItemBackground</item>
+        <item name="android:drawablePadding">@dimen/menu_item_icon_padding</item>
+        <item name="android:gravity">center_vertical</item>
+        <item name="android:padding">@dimen/menu_item_text_view_padding</item>
+        <item name="android:text">@string/app_name</item>
+        <item name="android:textColor">@color/menuItemTextViewTextColor</item>
+        <item name="android:textSize">@dimen/menu_item_text_view_size</item>
+    </style>
+
 </resources>

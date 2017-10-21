@@ -1,9 +1,7 @@
 package com.thisobeystudio.androidfloatingmenu;
 
-import android.graphics.Color;
 import android.os.Bundle;
 import android.support.constraint.ConstraintLayout;
-import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -99,56 +97,22 @@ public class DemoActivity extends AppCompatActivity
     private void showFloatingMenu() {
 
         final FloatingMenu.MenuIconPosition menuIconPosition = FloatingMenu.MenuIconPosition.LEFT;
-        final int menuItemIconPadding =
-                getResources().getDimensionPixelOffset(R.dimen.menu_item_icon_padding);
 
         mFloatingMenu.showFloatingMenu(
                 DemoActivity.this,
                 mParent,
                 DemoActivity.this,
                 demoData(),
-                menuIconPosition,
-                menuItemIconPadding);
+                menuIconPosition);
 
-        // menu properties
-        final int menuWidth = getResources().getDimensionPixelOffset(R.dimen.menu_width);
-        final int menuHeight = getResources().getDimensionPixelOffset(R.dimen.menu_height);
-        final float menuCornerRadius =
-                getResources().getDimensionPixelOffset(R.dimen.menu_corner_radius);
-        final int menuBackgroundColor = ContextCompat.getColor(this, R.color.menuBackgroundColor);
-        final int menuElevation = getResources().getDimensionPixelOffset(R.dimen.menu_elevation);
-
-        // setup menu
-        mFloatingMenu.setMenuProperties(
-                menuWidth,
-                menuHeight,
-                menuCornerRadius,
-                menuBackgroundColor,
-                menuElevation);
-
-        // header properties
         final String demoHeaderTitle = "DEMO MENU";
-        final int headerHeight =
-                getResources().getDimensionPixelOffset(R.dimen.menu_header_height);
-        final int headerPadding =
-                getResources().getDimensionPixelOffset(R.dimen.menu_header_padding);
-        final int headerTitleColor = Color.WHITE;
-        final int headerBackgroundColor = ContextCompat.getColor(this, R.color.colorPrimaryDark);
-
-        // setup menu header
-        mFloatingMenu.setHeader(
-                demoHeaderTitle,
-                headerHeight,
-                headerPadding,
-                headerTitleColor,
-                headerBackgroundColor);
-
-        // avoid menu deleting on header click, so preferably null or specify an OnClickListener
-        mFloatingMenu.setHeaderOnClickListener(null);
+        mFloatingMenu.setHeaderTitle(demoHeaderTitle);
+        // to avoid removeMenu() on header click, so preferably null or specify an OnClickListener
+        //mFloatingMenu.setHeaderOnClickListener(null);
         mFloatingMenu.setHeaderOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                Toast.makeText(DemoActivity.this, "MenuHeader Clicked", Toast.LENGTH_SHORT).show();
+                Toast.makeText(DemoActivity.this, "Menu Header Clicked", Toast.LENGTH_SHORT).show();
             }
         });
 

@@ -3,5 +3,11 @@
     <color name="colorPrimary">#3F51B5</color>
     <color name="colorPrimaryDark">#303F9F</color>
     <color name="colorAccent">#FF4081</color>
-    <color name="menuBackgroundColor">#7d7e7e7e</color>
+
+    <color name="menuBackgroundColor">#4b000000</color>
+    <color name="menuHeaderTitleColor">#ffffff</color>
+    <color name="menuHeaderBackgroundColor">#303F9F</color>
+    <color name="menuItemTextViewTextColor">#585858</color>
+    <color name="menuItemTextViewBackgroundColor">#ffffff</color>
+
 </resources>
