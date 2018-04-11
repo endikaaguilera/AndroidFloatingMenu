@@ -7,22 +7,25 @@ Android Simple Centered Floating Menu
 ```java
 FloatingMenu mFloatingMenu = new FloatingMenu();
 ```
+
   - Show Menu:
 ```java
 mFloatingMenu.showFloatingMenu(YourActivity.this, parentConstraintLayout, callbacks, demoData(), menuIconPosition, menuItemIconPadding);
 mFloatingMenu.setMenuProperties(menuWidth, menuHeight, menuCornerRadius, menuBackgroundColor, menuElevation);
 mFloatingMenu.setHeader(headerTitle, headerHeight, headerPadding, headerTitleColor, headerBackgroundColor);
 ```
+
   - Remove menu
 ```java
 mFloatingMenu.removeMenu();
 ```
+
   - For prevent removeMenu() on header click, set setHeaderOnClickListener(null) or specify an OnClickListener
 ```java
 mFloatingMenu.setHeaderOnClickListener(null);
-´´´
+```
 or
-´´´java
+```java
 mFloatingMenu.setHeaderOnClickListener(new View.OnClickListener() {
   @Override
   public void onClick(View view) {
@@ -31,13 +34,13 @@ mFloatingMenu.setHeaderOnClickListener(new View.OnClickListener() {
   }
 });
 ```
+
   - If true menu will be removed onBack pressed with properly OnBackPressed setup
 ```java
 mFloatingMenu.setCancelable(true);
 ```
 
-
-If true menu will be removed on any out of menu touch
+  - If true menu will be removed on any out of menu touch
 ```java
 mFloatingMenu.setCancelableOnTouchOutside(true);
 ```
