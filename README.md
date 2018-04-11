@@ -3,15 +3,15 @@ Android Simple Centered Floating Menu
 
 # Basic Usage
 
-  - Initialize ```java FloatingMenu()```
+  - Initialize FloatingMenu
 ```java
 FloatingMenu mFloatingMenu = new FloatingMenu();
 ```
   - Show Menu:
 ```java
 mFloatingMenu.showFloatingMenu(YourActivity.this, parentConstraintLayout, callbacks, demoData(), menuIconPosition, menuItemIconPadding);
-  mFloatingMenu.setMenuProperties(menuWidth, menuHeight, menuCornerRadius, menuBackgroundColor, menuElevation);
-  mFloatingMenu.setHeader(headerTitle, headerHeight, headerPadding, headerTitleColor, headerBackgroundColor);
+mFloatingMenu.setMenuProperties(menuWidth, menuHeight, menuCornerRadius, menuBackgroundColor, menuElevation);
+mFloatingMenu.setHeader(headerTitle, headerHeight, headerPadding, headerTitleColor, headerBackgroundColor);
 ```
   - Remove menu
 ```java
@@ -20,7 +20,9 @@ mFloatingMenu.removeMenu();
   - For prevent removeMenu() on header click, set setHeaderOnClickListener(null) or specify an OnClickListener
 ```java
 mFloatingMenu.setHeaderOnClickListener(null);
+´´´
 or
+´´´java
 mFloatingMenu.setHeaderOnClickListener(new View.OnClickListener() {
   @Override
   public void onClick(View view) {
