@@ -1,6 +1,7 @@
 package com.thisobeystudio.androidfloatingmenu.menu;
 
 import android.content.Context;
+import android.support.annotation.NonNull;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -12,7 +13,7 @@ import com.thisobeystudio.androidfloatingmenu.R;
 import java.util.ArrayList;
 
 /**
- * Created by thisobeystudio on 20/10/17.
+ * Created by thisobeystudio on 9/11/17.
  * Copyright: (c) 2017 ThisObey Studio
  * Contact: thisobeystudio@gmail.com
  */
@@ -21,24 +22,22 @@ public class FloatingMenuItemsAdapter
         extends RecyclerView.Adapter<FloatingMenuItemsAdapter.MenuItemViewHolder> {
 
     public interface MenuItemCallbacks {
-        void onFloatingMenuItemClick(int pos);
+        @SuppressWarnings("unused")
+        void onFloatingMenuItemClick(int pos, String title);
     }
 
     // menu item onclick callbacks
     private MenuItemCallbacks mCallbacks;
 
     // context
-    private Context mContext;
+    private final Context mContext;
 
     // recipes array
     private final ArrayList<FloatingMenuItem> menuItems;
 
-    // menu items icon position
-    private FloatingMenu.MenuIconPosition mMenuIconPosition;
-
     class MenuItemViewHolder extends RecyclerView.ViewHolder {
 
-        TextView menuItemTextView;
+        final TextView menuItemTextView;
 
         MenuItemViewHolder(View itemView) {
             super(itemView);
@@ -51,11 +50,9 @@ public class FloatingMenuItemsAdapter
     }
 
     FloatingMenuItemsAdapter(Context context,
-                             final ArrayList<FloatingMenuItem> menuItems,
-                             final FloatingMenu.MenuIconPosition menuIconPosition) {
+                             final ArrayList<FloatingMenuItem> menuItems) {
         this.mContext = context;
         this.menuItems = menuItems;
-        this.mMenuIconPosition = menuIconPosition;
     }
 
     @Override
@@ -64,22 +61,23 @@ public class FloatingMenuItemsAdapter
         return menuItems.size();
     }
 
+    @NonNull
     @Override
-    public MenuItemViewHolder onCreateViewHolder(ViewGroup parent, int i) {
+    public MenuItemViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int i) {
         View rowView = LayoutInflater.from(parent.getContext())
                 .inflate(R.layout.menu_item, parent, false);
         return new MenuItemViewHolder(rowView);
     }
 
     @Override
-    public void onBindViewHolder(final MenuItemViewHolder holder, int i) {
+    public void onBindViewHolder(@NonNull final MenuItemViewHolder holder, int i) {
 
         if (mContext != null
                 && menuItems != null
                 && menuItems.get(i)
                 != null && !menuItems.get(i).getTitle().isEmpty()) {
 
-            String menuItemText = menuItems.get(i).getTitle();
+            final String menuItemText = menuItems.get(i).getTitle();
             // set menu item text
             holder.menuItemTextView.setText(menuItemText);
 
@@ -87,12 +85,9 @@ public class FloatingMenuItemsAdapter
             setTextViewCompoundDrawable(holder.menuItemTextView, menuItems.get(i).getIcon());
 
             final int pos = i;
-            holder.menuItemTextView.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View view) {
-                    if (mCallbacks != null) {
-                        mCallbacks.onFloatingMenuItemClick(pos);
-                    }
+            holder.menuItemTextView.setOnClickListener(view -> {
+                if (mCallbacks != null) {
+                    mCallbacks.onFloatingMenuItemClick(pos, menuItemText);
                 }
             });
         }
@@ -115,45 +110,12 @@ public class FloatingMenuItemsAdapter
         int noDrawable = 0;
 
         // set menu item icon
-        switch (mMenuIconPosition) {
-            case NONE:
-                textView.setCompoundDrawablesWithIntrinsicBounds(
-                        noDrawable,                         // left
-                        noDrawable,                         // top
-                        noDrawable,                         // right
-                        noDrawable);                        // bottom
-                break;
-            case LEFT:
-                textView.setCompoundDrawablesWithIntrinsicBounds(
-                        drawable,
-                        noDrawable,
-                        noDrawable,
-                        noDrawable);
-                break;
-            case TOP:
-                textView.setCompoundDrawablesWithIntrinsicBounds(
-                        noDrawable,
-                        drawable,
-                        noDrawable,
-                        noDrawable);
-                break;
-            case RIGHT:
-                textView.setCompoundDrawablesWithIntrinsicBounds(
-                        noDrawable,
-                        noDrawable,
-                        drawable,
-                        noDrawable);
-                break;
-            case BOTTOM:
-                textView.setCompoundDrawablesWithIntrinsicBounds(
-                        noDrawable,
-                        noDrawable,
-                        noDrawable,
-                        drawable);
-                break;
-            default:
-                break;
-        }
+        textView.setCompoundDrawablesWithIntrinsicBounds(
+                drawable,                           // left
+                noDrawable,                         // top
+                noDrawable,                         // right
+                noDrawable);                        // bottom
+
 
     }
 

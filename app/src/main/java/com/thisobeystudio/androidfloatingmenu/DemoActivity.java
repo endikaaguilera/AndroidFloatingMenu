@@ -88,32 +88,22 @@ public class DemoActivity extends AppCompatActivity
 
     }
 
-    @Override
-    public void onFloatingMenuItemClick(int pos) {
-        Toast.makeText(this, "Demo menu item clicked pos = " + pos, Toast.LENGTH_SHORT).show();
-        mFloatingMenu.removeMenu();
-    }
-
     private void showFloatingMenu() {
-
-        final FloatingMenu.MenuIconPosition menuIconPosition = FloatingMenu.MenuIconPosition.LEFT;
 
         mFloatingMenu.showFloatingMenu(
                 DemoActivity.this,
                 mParent,
                 DemoActivity.this,
-                demoData(),
-                menuIconPosition);
+                demoData());
 
         final String demoHeaderTitle = "DEMO MENU";
         mFloatingMenu.setHeaderTitle(demoHeaderTitle);
 
-        mFloatingMenu.setHeaderOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                Toast.makeText(DemoActivity.this, "Menu Header Clicked", Toast.LENGTH_SHORT).show();
-            }
-        });
+        mFloatingMenu.setHeaderOnClickListener(
+                view -> Toast.makeText(DemoActivity.this,
+                        "Menu Header Clicked",
+                        Toast.LENGTH_SHORT)
+                        .show());
 
     }
 
@@ -139,4 +129,9 @@ public class DemoActivity extends AppCompatActivity
         showFloatingMenu();
     }
 
+    @Override
+    public void onFloatingMenuItemClick(int pos, String title) {
+        Toast.makeText(this, "Demo menu item clicked pos = " + pos, Toast.LENGTH_SHORT).show();
+        mFloatingMenu.removeMenu();
+    }
 }

@@ -2,42 +2,28 @@ package com.thisobeystudio.androidfloatingmenu.menu;
 
 import android.content.Context;
 import android.support.constraint.ConstraintLayout;
-import android.support.constraint.ConstraintSet;
 import android.support.v4.view.ViewCompat;
 import android.support.v7.widget.CardView;
 import android.support.v7.widget.DividerItemDecoration;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
-import android.transition.TransitionManager;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.FrameLayout;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import com.thisobeystudio.androidfloatingmenu.R;
 
 import java.util.ArrayList;
 
 /**
- * Created by thisobeystudio on 20/10/17.
+ * Created by thisobeystudio on 9/11/17.
  * Copyright: (c) 2017 ThisObey Studio
  * Contact: thisobeystudio@gmail.com
  */
 
-// TODO menu item text color tint list
-// TODO menu item icons color
-// TODO menu item icons color tint list
 public class FloatingMenu {
-
-    public enum MenuIconPosition {
-        NONE,
-        LEFT,
-        TOP,
-        RIGHT,
-        BOTTOM
-    }
 
     //private final String TAG = FloatingMenu.class.getSimpleName();
 
@@ -46,20 +32,16 @@ public class FloatingMenu {
      * @param parent            parent ConstraintLayout
      * @param menuItemCallbacks menu callbacks
      * @param menuData          menu data
-     * @param menuIconPosition  menu item icon pos
      */
     public void showFloatingMenu(final Context context,
                                  final ConstraintLayout parent,
                                  final FloatingMenuItemsAdapter.MenuItemCallbacks menuItemCallbacks,
-                                 final ArrayList<FloatingMenuItem> menuData,
-                                 final MenuIconPosition menuIconPosition) {
+                                 final ArrayList<FloatingMenuItem> menuData) {
 
         if (context == null
                 || parent == null
                 || menuItemCallbacks == null
                 || menuData == null) {
-            Toast.makeText(context,
-                    "Something went wrong loading menu", Toast.LENGTH_SHORT).show();
             setVisible(false);
             return;
         }
@@ -69,7 +51,6 @@ public class FloatingMenu {
         if (!isVisible()) {
             setVisible(true);
             setupFloatingMenuFrameLayout(context);
-            setMenuIconPosition(menuIconPosition);
             setupRecyclerView(
                     context,
                     menuItemCallbacks,
@@ -84,6 +65,10 @@ public class FloatingMenu {
             preventMenuBiggerThanParent();
 
             getCardView().setOnClickListener(null);
+
+            setHeaderTitle("Hello");
+            setHeaderElevation(context);
+            setHeaderOnClickListener(null);
         }
 
     }
@@ -93,45 +78,16 @@ public class FloatingMenu {
      */
     private void setupFloatingMenuFrameLayout(final Context context) {
 
-        final ConstraintSet constraintSet = new ConstraintSet();
-
-        TransitionManager.beginDelayedTransition(getParentConstraintLayout());
+        if (context == null) return;
 
         LayoutInflater inflater = LayoutInflater.from(context);
-        FrameLayout frameLayout = (FrameLayout)
-                inflater.inflate(R.layout.floating_menu, getParentConstraintLayout(), false);
+
+        FrameLayout frameLayout = (FrameLayout) inflater
+                .inflate(R.layout.floating_menu, getParentConstraintLayout(), false);
+
         setFrameLayout(frameLayout);
 
-        final int margin = 0; // no margin to get full parent size
-
-        constraintSet.connect(getFrameLayout().getId(),
-                ConstraintSet.BOTTOM,
-                getParentConstraintLayout().getId(),
-                ConstraintSet.BOTTOM,
-                margin);
-
-        constraintSet.connect(getFrameLayout().getId(),
-                ConstraintSet.LEFT,
-                getParentConstraintLayout().getId(),
-                ConstraintSet.LEFT,
-                margin);
-
-        constraintSet.connect(getFrameLayout().getId(),
-                ConstraintSet.RIGHT,
-                getParentConstraintLayout().getId(),
-                ConstraintSet.RIGHT,
-                margin);
-
-        constraintSet.connect(getFrameLayout().getId(),
-                ConstraintSet.TOP,
-                getParentConstraintLayout().getId(),
-                ConstraintSet.TOP,
-                margin);
-
         getParentConstraintLayout().addView(getFrameLayout());
-
-        constraintSet.applyTo(getParentConstraintLayout());
-
     }
 
     /**
@@ -172,8 +128,7 @@ public class FloatingMenu {
         // specify an adapter
         FloatingMenuItemsAdapter adapter = new FloatingMenuItemsAdapter(
                 context,
-                menuData,
-                getMenuIconPosition());
+                menuData);
 
         // set Adapter CallBacks
         adapter.setCallbacks(menuItemCallbacks);
@@ -188,27 +143,6 @@ public class FloatingMenu {
         // set recyclerView VISIBLE
         mRecyclerView.setVisibility(View.VISIBLE);
 
-    }
-
-    /**
-     * menu item icon pos
-     */
-    private MenuIconPosition mMenuIconPosition = MenuIconPosition.NONE;
-
-    /**
-     * @param menuIconPosition menu item icon pos
-     */
-    @SuppressWarnings("WeakerAccess")
-    public void setMenuIconPosition(MenuIconPosition menuIconPosition) {
-        this.mMenuIconPosition = menuIconPosition;
-    }
-
-    /**
-     * @return menu item icon pos
-     */
-    @SuppressWarnings("WeakerAccess")
-    public MenuIconPosition getMenuIconPosition() {
-        return mMenuIconPosition;
     }
 
     /**
@@ -243,29 +177,26 @@ public class FloatingMenu {
         if (getParentConstraintLayout() == null || getCardView() == null) return;
 
         // using post to make sure measured width & height returns a proper value
-        getParentConstraintLayout().post(new Runnable() {
-            @Override
-            public void run() {
+        getParentConstraintLayout().post(() -> {
 
-                int w = width;
-                int h = height;
+            int w = width;
+            int h = height;
 
-                // check that passed with is not bigger than parent width and fix it if so
-                if (getParentConstraintLayout().getMeasuredWidth() != 0
-                        && w > getParentConstraintLayout().getMeasuredWidth())
-                    w = getParentConstraintLayout().getMeasuredWidth();
+            // check that passed with is not bigger than parent width and fix it if so
+            if (getParentConstraintLayout().getMeasuredWidth() != 0
+                    && w > getParentConstraintLayout().getMeasuredWidth())
+                w = getParentConstraintLayout().getMeasuredWidth();
 
-                // check that passed height is not bigger than parent height and fix it if so
-                if (getParentConstraintLayout().getMeasuredHeight() != 0
-                        && h > getParentConstraintLayout().getMeasuredHeight())
-                    h = getParentConstraintLayout().getMeasuredHeight();
+            // check that passed height is not bigger than parent height and fix it if so
+            if (getParentConstraintLayout().getMeasuredHeight() != 0
+                    && h > getParentConstraintLayout().getMeasuredHeight())
+                h = getParentConstraintLayout().getMeasuredHeight();
 
-                ViewGroup.LayoutParams params = getCardView().getLayoutParams();
-                params.width = w;
-                params.height = h;
-                getCardView().setLayoutParams(params);
+            ViewGroup.LayoutParams params = getCardView().getLayoutParams();
+            params.width = w;
+            params.height = h;
+            getCardView().setLayoutParams(params);
 
-            }
         });
 
     }
@@ -277,29 +208,26 @@ public class FloatingMenu {
     private void preventMenuBiggerThanParent() {
         if (getParentConstraintLayout() == null || getCardView() == null) return;
         // using post to make sure measured width & height returns a proper value
-        getCardView().post(new Runnable() {
-            @Override
-            public void run() {
+        getCardView().post(() -> {
 
-                int parentViewWidth = getParentConstraintLayout().getMeasuredWidth();
-                int parentViewHeight = getParentConstraintLayout().getMeasuredHeight();
-                int cardViewWidth = getCardView().getMeasuredWidth();
-                int cardViewHeight = getCardView().getMeasuredHeight();
+            int parentViewWidth = getParentConstraintLayout().getMeasuredWidth();
+            int parentViewHeight = getParentConstraintLayout().getMeasuredHeight();
+            int cardViewWidth = getCardView().getMeasuredWidth();
+            int cardViewHeight = getCardView().getMeasuredHeight();
 
-                // check that passed with is not bigger than parent width and fix it if so
-                if (cardViewWidth > parentViewWidth)
-                    cardViewWidth = parentViewWidth;
+            // check that passed with is not bigger than parent width and fix it if so
+            if (cardViewWidth > parentViewWidth)
+                cardViewWidth = parentViewWidth;
 
-                // check that passed height is not bigger than parent height and fix it if so
-                if (cardViewHeight > parentViewHeight)
-                    cardViewHeight = parentViewHeight;
+            // check that passed height is not bigger than parent height and fix it if so
+            if (cardViewHeight > parentViewHeight)
+                cardViewHeight = parentViewHeight;
 
-                ViewGroup.LayoutParams params = getCardView().getLayoutParams();
-                params.width = cardViewWidth;
-                params.height = cardViewHeight;
-                getCardView().setLayoutParams(params);
+            ViewGroup.LayoutParams params = getCardView().getLayoutParams();
+            params.width = cardViewWidth;
+            params.height = cardViewHeight;
+            getCardView().setLayoutParams(params);
 
-            }
         });
     }
 
@@ -349,12 +277,7 @@ public class FloatingMenu {
     private void setCancelableOnTouchOutside() {
 
         if (isCancelableOnTouchOutside()) {
-            getFrameLayout().setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View view) {
-                    removeMenu();
-                }
-            });
+            getFrameLayout().setOnClickListener(view -> removeMenu());
         }
 
     }
@@ -463,7 +386,8 @@ public class FloatingMenu {
     /**
      * @param onClickListener header onClickListener
      */
-    public void setHeaderOnClickListener(View.OnClickListener onClickListener) {
+    public void setHeaderOnClickListener(@SuppressWarnings("SameParameterValue")
+                                                 View.OnClickListener onClickListener) {
         if (getHeaderTextView() == null) return;
         getHeaderTextView().setOnClickListener(onClickListener);
     }
@@ -523,6 +447,12 @@ public class FloatingMenu {
         getHeaderTextView().setBackgroundColor(color);
     }
 
+    private void setHeaderElevation(Context context) {
+        float elevation =
+                context.getResources().getDimensionPixelSize(R.dimen.menu_header_elevation);
+        ViewCompat.setElevation(getHeaderTextView(), elevation);
+    }
+
     /**
      * @param titleColor      header title text color
      * @param backgroundColor header background color
@@ -573,7 +503,7 @@ public class FloatingMenu {
      * @param show false to hide menu header
      */
     @SuppressWarnings("WeakerAccess")
-    public void showHeader(boolean show) {
+    public void showHeader(@SuppressWarnings("SameParameterValue") boolean show) {
         if (getHeaderTextView() == null) return;
         if (show)
             getHeaderTextView().setVisibility(View.VISIBLE);
@@ -619,6 +549,7 @@ public class FloatingMenu {
 
     /**
      * if true menu will be removed on any out of menu touch, must be set before showFloatingMenu()
+     *
      * @param cancelable cancelable On Touch Outside
      */
     @SuppressWarnings("unused")
